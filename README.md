@@ -14,17 +14,17 @@ Set up the client with a JSON file of this format
 
 ```json
 [
-  {
-    "appId": "com.company.android",
-    "devKey": "aaaaaaaaaaaaaaaaaaaaaa",
-    "platform": "android"
-  },
-  {
-    "appId": "id111111111",
-    "bundleId": "com.company.ios",
-    "devKey": "aaaaaaaaaaaaaaaaaaaaaa",
-    "platform": "ios"
-  }
+    {
+        "appId": "com.company.android",
+        "devKey": "aaaaaaaaaaaaaaaaaaaaaa",
+        "platform": "android"
+    },
+    {
+        "appId": "id111111111",
+        "bundleId": "com.company.ios",
+        "devKey": "aaaaaaaaaaaaaaaaaaaaaa",
+        "platform": "ios"
+    }
 ]
 ```
 
@@ -52,14 +52,13 @@ func main() {
 func startTrial(tracker af.Tracker) {
 
         // User starts a trial
-        evt := af.NewEvent("1111111111111-1111111", af.IOS)
-        evt.SetName(af.StartTrial)
-        evt.SetAdvertisingID("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA")
-        evt.SetBundleID("com.company.app")
-        evt.SetDeviceIP("1.2.3.4")
-        evt.SetRevenue(59.99, "USD")
-        evt.SetDateValue("expiry", validDate)
-        evt.SetEventTime(time.Now())
+        evt := af.NewEvent("1111111111111-1111111", af.IOS).
+                SetName(af.StartTrial).
+                SetAdvertisingID("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA").
+                SetDeviceIP("1.2.3.4").
+                SetRevenue(59.99, "USD").
+                SetDateValue("expiry", validDate).
+                SetEventTime(time.Now())
 
         if err := tracker.Send(evt); err != nil {
                 panic(err)
@@ -82,8 +81,8 @@ func cancelSubscription(tracker af.Tracker) {
 
 Official AppsFlyer docs
 
-- [Server-to-Server guide](https://support.appsflyer.com/hc/en-us/articles/207034486-Server-to-Server-Events-API)
-- [Subscription Tracking guide](https://support.appsflyer.com/hc/en-us/articles/360001279189-Subscription-Tracking-Guide#ServertoServer)
+-   [Server-to-Server guide](https://support.appsflyer.com/hc/en-us/articles/207034486-Server-to-Server-Events-API)
+-   [Subscription Tracking guide](https://support.appsflyer.com/hc/en-us/articles/360001279189-Subscription-Tracking-Guide#ServertoServer)
 
 ## License
 

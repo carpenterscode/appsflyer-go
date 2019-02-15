@@ -67,6 +67,9 @@ func (t Tracker) Send(evt event) error {
 	}
 
 	appInfo := t.platforms[evt.platform]
+
+	evt.body.BundleID = appInfo.BundleID
+
 	appsFlyerURL := fmt.Sprintf(appsflyerURLFormat, appInfo.AppID)
 
 	var body io.Reader
@@ -118,8 +121,8 @@ type body struct {
 	UseEventsAPI  bool   `json:"af_events_api,string"`
 }
 
-func NewEvent(appsFlyerID string, platform deviceOS) event {
-	return event{
+func NewEvent(appsFlyerID string, platform deviceOS) *event {
+	return &event{
 		body: body{
 			AppsFlyerID:  appsFlyerID,
 			UseEventsAPI: true,
@@ -129,30 +132,50 @@ func NewEvent(appsFlyerID string, platform deviceOS) event {
 	}
 }
 
-func (evt *event) SetName(name EventName) {
+func (evt *event) SetName(name EventName) *event {
 	evt.body.EventName = string(name)
+	return evt
 }
 
-func (evt *event) SetEventTime(eventTime time.Time) {
+func (evt *event) SetEventTime(eventTime time.Time) *event {
 	evt.body.EventTime = eventTime.Format(appsflyerTimeFormat)
+	return evt
 }
 
-func (evt *event) SetValue(param EventParam, val string) {
+func (evt *event) SetValue(param EventParam, val string) *event {
 	evt.values[param] = val
+	return evt
 }
 
-func (evt *event) SetDateValue(param EventParam, val time.Time) {
+func (evt *event) SetDateValue(param EventParam, val time.Time) *event {
 	evt.values[param] = val.Format(appsflyerDateFormat)
+	return evt
 }
 
-func (evt *event) SetRevenue(revenue float64, currency string) {
+func (evt *event) SetRevenue(revenue float64, currency string) *event {
 	evt.values[ParamCurrency] = currency
 	evt.values[ParamRevenue] = fmt.Sprintf("%.2f", revenue)
+	return evt
 }
 
-func (evt *event) SetPrice(price float64, currency string) {
+func (evt *event) SetPrice(price float64, currency string) *event {
 	evt.values[ParamCurrency] = currency
 	evt.values[ParamPrice] = fmt.Sprintf("%.2f", price)
+	return evt
+}
+
+func (evt *event) SetAdvertisingID(advertisingID string) *event {
+	if evt.platform == Android {
+		evt.AdvertisingID = advertisingID
+	} else {
+		evt.IDFA = advertisingID
+	}
+	return evt
+}
+
+func (evt *event) SetDeviceIP(deviceIP string) *event {
+	evt.DeviceIP = deviceIP
+	return evt
 }
 
 func (evt event) MarshalJSON() ([]byte, error) {
@@ -165,20 +188,4 @@ func (evt event) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(evt.body)
-}
-
-func (evt *event) SetAdvertisingID(advertisingID string) {
-	if evt.platform == Android {
-		evt.AdvertisingID = advertisingID
-	} else {
-		evt.IDFA = advertisingID
-	}
-}
-
-func (evt *event) SetBundleID(bundleID string) {
-	evt.BundleID = bundleID
-}
-
-func (evt *event) SetDeviceIP(deviceIP string) {
-	evt.DeviceIP = deviceIP
 }
