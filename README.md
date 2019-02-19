@@ -46,6 +46,8 @@ func main() {
 
         startTrial(tracker)
 
+        subscribe(tracker)
+
         cancelSubscription(tracker)
 }
 
@@ -56,7 +58,7 @@ func startTrial(tracker af.Tracker) {
                 SetName(af.StartTrial).
                 SetAdvertisingID("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA").
                 SetDeviceIP("1.2.3.4").
-                SetRevenue(59.99, "USD").
+                SetPrice(59.99, "USD").
                 SetDateValue("expiry", validDate).
                 SetEventTime(time.Now())
 
@@ -65,7 +67,23 @@ func startTrial(tracker af.Tracker) {
         }
 }
 
+func subscribe(tracker af.Tracker) {
+
+        // User ends trial and pays for first subscription period
+        evt := af.NewEvent("1111111111111-1111111", af.IOS).
+                SetName(af.Subscribe).
+                SetAdvertisingID("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA").
+                SetDeviceIP("1.2.3.4").
+                SetRevenue(59.99, "USD").
+                SetDateValue("expiry", validDate).
+
+        if err := tracker.Send(evt); err != nil {
+                panic(err)
+        }
+}
+
 func cancelSubscription(tracker af.Tracker) {
+
         // User cancels a subscription
         evt := af.NewEvent("1111111111111-1111111", af.Android)
         evt.SetName(af.EventName("cancel_subscription"))
