@@ -60,9 +60,11 @@ func (t *Tracker) SetConfig(configPath string) error {
 	return nil
 }
 
-func (t Tracker) Send(evt event) error {
+func (t Tracker) Send(evt *event) error {
 
-	if string(evt.body.EventName) == "" {
+	if evt == nil {
+		return fmt.Errorf("AppsFlyer tracker should not send a nil event")
+	} else if string(evt.body.EventName) == "" {
 		return fmt.Errorf("AppsFlyer event should have an event name")
 	}
 
