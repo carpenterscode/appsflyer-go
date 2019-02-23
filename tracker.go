@@ -89,7 +89,10 @@ func (t Tracker) Send(evt event) error {
 	if resp, err := t.client.Do(req); err != nil {
 		return err
 	} else if resp.StatusCode != 200 {
+		resp.Body.Close()
 		return fmt.Errorf("AppsFlyer server response %s", resp.Status)
+	} else {
+		resp.Body.Close()
 	}
 
 	return nil
