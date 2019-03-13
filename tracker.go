@@ -60,7 +60,7 @@ func (t *Tracker) SetConfig(configPath string) error {
 	return nil
 }
 
-func (t Tracker) Send(evt *event) error {
+func (t Tracker) Send(evt *Event) error {
 
 	if evt == nil {
 		return fmt.Errorf("AppsFlyer tracker should not send a nil event")
@@ -107,7 +107,7 @@ type app struct {
 	Platform deviceOS `json:"platform"`
 }
 
-type event struct {
+type Event struct {
 	body
 	platform deviceOS
 	values   map[EventParam]string
@@ -126,8 +126,8 @@ type body struct {
 	UseEventsAPI  bool   `json:"af_events_api,string"`
 }
 
-func NewEvent(appsFlyerID string, platform deviceOS) *event {
-	return &event{
+func NewEvent(appsFlyerID string, platform deviceOS) *Event {
+	return &Event{
 		body: body{
 			AppsFlyerID:  appsFlyerID,
 			UseEventsAPI: true,
@@ -137,39 +137,39 @@ func NewEvent(appsFlyerID string, platform deviceOS) *event {
 	}
 }
 
-func (evt *event) SetName(name EventName) *event {
+func (evt *Event) SetName(name EventName) *Event {
 	evt.body.EventName = string(name)
 	return evt
 }
 
-func (evt *event) SetEventTime(eventTime time.Time) *event {
+func (evt *Event) SetEventTime(eventTime time.Time) *Event {
 	evt.body.EventTime = eventTime.Format(appsflyerTimeFormat)
 	return evt
 }
 
-func (evt *event) SetValue(param EventParam, val string) *event {
+func (evt *Event) SetValue(param EventParam, val string) *Event {
 	evt.values[param] = val
 	return evt
 }
 
-func (evt *event) SetDateValue(param EventParam, val time.Time) *event {
+func (evt *Event) SetDateValue(param EventParam, val time.Time) *Event {
 	evt.values[param] = val.Format(appsflyerDateFormat)
 	return evt
 }
 
-func (evt *event) SetRevenue(revenue float64, currency string) *event {
+func (evt *Event) SetRevenue(revenue float64, currency string) *Event {
 	evt.values[ParamCurrency] = currency
 	evt.values[ParamRevenue] = fmt.Sprintf("%.2f", revenue)
 	return evt
 }
 
-func (evt *event) SetPrice(price float64, currency string) *event {
+func (evt *Event) SetPrice(price float64, currency string) *Event {
 	evt.values[ParamCurrency] = currency
 	evt.values[ParamPrice] = fmt.Sprintf("%.2f", price)
 	return evt
 }
 
-func (evt *event) SetAdvertisingID(advertisingID string) *event {
+func (evt *Event) SetAdvertisingID(advertisingID string) *Event {
 	if evt.platform == Android {
 		evt.AdvertisingID = advertisingID
 	} else {
@@ -178,12 +178,12 @@ func (evt *event) SetAdvertisingID(advertisingID string) *event {
 	return evt
 }
 
-func (evt *event) SetDeviceIP(deviceIP string) *event {
+func (evt *Event) SetDeviceIP(deviceIP string) *Event {
 	evt.DeviceIP = deviceIP
 	return evt
 }
 
-func (evt event) MarshalJSON() ([]byte, error) {
+func (evt Event) MarshalJSON() ([]byte, error) {
 	if len(evt.values) > 0 {
 		if data, err := json.Marshal(evt.values); err != nil {
 			return nil, err
