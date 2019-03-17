@@ -45,9 +45,4 @@ func TestEventWithoutOptionalParams(t *testing.T) {
 	}
 }
 
-func TestConfigureTracker(t *testing.T) {
-	if _, trackerErr := NewTracker(); trackerErr != nil {
-		t.Error(trackerErr)
-	}
-	// TODO: Read a test JSON file
-}
+// TODO: Test using JSON configuration

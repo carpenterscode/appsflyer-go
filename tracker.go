@@ -22,7 +22,7 @@ type Tracker struct {
 	platforms map[deviceOS]app
 }
 
-func NewTracker() (*Tracker, error) {
+func NewTracker() *Tracker {
 
 	// An instance of http.DefaultTransport with 10 max idle conn
 	client := http.Client{Transport: &http.Transport{
@@ -38,7 +38,7 @@ func NewTracker() (*Tracker, error) {
 		ExpectContinueTimeout: 1 * time.Second,
 	}}
 
-	return &Tracker{client: client}, nil
+	return &Tracker{client: client}
 }
 
 func (t *Tracker) SetConfig(configPath string) error {
