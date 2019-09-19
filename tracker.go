@@ -60,6 +60,20 @@ func (t *Tracker) SetConfig(configPath string) error {
 	return nil
 }
 
+func (t *Tracker) SetConfigByByte(data []byte) error {
+
+	var config []app
+	if err := json.Unmarshal(data,&config); err != nil {
+		return err
+	}
+
+	t.platforms = make(map[deviceOS]app, len(config))
+	for _, app := range config {
+		t.platforms[app.Platform] = app
+	}
+	return nil
+}
+
 func (t Tracker) Send(evt *Event) error {
 
 	if evt == nil {
