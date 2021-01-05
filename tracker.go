@@ -17,13 +17,17 @@ const (
 	appsflyerTimeFormat = "2006-01-02 15:04:05.000"
 )
 
-type Tracker struct {
+type Tracker interface {
+	SetConfig(string) error
+	Send(*Event) error
+}
+
+type tracker struct {
 	client    http.Client
 	platforms map[deviceOS]app
 }
 
-func NewTracker() *Tracker {
-
+func NewTracker() Tracker {
 	// An instance of http.DefaultTransport with 10 max idle conn
 	client := http.Client{Transport: &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
@@ -38,10 +42,10 @@ func NewTracker() *Tracker {
 		ExpectContinueTimeout: 1 * time.Second,
 	}}
 
-	return &Tracker{client: client}
+	return &tracker{client: client}
 }
 
-func (t *Tracker) SetConfig(configPath string) error {
+func (t *tracker) SetConfig(configPath string) error {
 	configFile, configErr := os.Open(configPath)
 	defer configFile.Close()
 	if configErr != nil {
@@ -60,7 +64,7 @@ func (t *Tracker) SetConfig(configPath string) error {
 	return nil
 }
 
-func (t Tracker) Send(evt *Event) error {
+func (t tracker) Send(evt *Event) error {
 
 	if evt == nil {
 		return fmt.Errorf("AppsFlyer tracker should not send a nil event")
@@ -98,6 +102,21 @@ func (t Tracker) Send(evt *Event) error {
 	}
 
 	return nil
+}
+
+type FakeTracker struct {
+	FakeError        error
+	ActualConfigPath string
+	ActualEvent      *Event
+}
+
+func (t *FakeTracker) SetConfig(configPath string) error {
+	t.ActualConfigPath = configPath
+	return t.FakeError
+}
+func (t *FakeTracker) Send(evt *Event) error {
+	t.ActualEvent = evt
+	return t.FakeError
 }
 
 type app struct {
