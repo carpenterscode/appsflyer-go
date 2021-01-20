@@ -72,7 +72,7 @@ func (t tracker) Send(evt *Event) error {
 		return fmt.Errorf("AppsFlyer event should have an event name")
 	}
 
-	appInfo := t.platforms[evt.platform]
+	appInfo := t.platforms[evt.Platform]
 
 	evt.body.BundleID = appInfo.BundleID
 
@@ -128,8 +128,8 @@ type app struct {
 
 type Event struct {
 	body
-	platform deviceOS
-	values   map[EventParam]string
+	Platform deviceOS
+	Values   map[EventParam]string
 }
 
 type body struct {
@@ -151,8 +151,8 @@ func NewEvent(appsFlyerID string, platform deviceOS) *Event {
 			AppsFlyerID:  appsFlyerID,
 			UseEventsAPI: true,
 		},
-		platform: platform,
-		values:   make(map[EventParam]string),
+		Platform: platform,
+		Values:   make(map[EventParam]string),
 	}
 }
 
@@ -167,29 +167,29 @@ func (evt *Event) SetEventTime(eventTime time.Time) *Event {
 }
 
 func (evt *Event) SetValue(param EventParam, val string) *Event {
-	evt.values[param] = val
+	evt.Values[param] = val
 	return evt
 }
 
 func (evt *Event) SetDateValue(param EventParam, val time.Time) *Event {
-	evt.values[param] = val.Format(appsflyerDateFormat)
+	evt.Values[param] = val.Format(appsflyerDateFormat)
 	return evt
 }
 
 func (evt *Event) SetRevenue(revenue float64, currency string) *Event {
-	evt.values[ParamCurrency] = currency
-	evt.values[ParamRevenue] = fmt.Sprintf("%.2f", revenue)
+	evt.Values[ParamCurrency] = currency
+	evt.Values[ParamRevenue] = fmt.Sprintf("%.2f", revenue)
 	return evt
 }
 
 func (evt *Event) SetPrice(price float64, currency string) *Event {
-	evt.values[ParamCurrency] = currency
-	evt.values[ParamPrice] = fmt.Sprintf("%.2f", price)
+	evt.Values[ParamCurrency] = currency
+	evt.Values[ParamPrice] = fmt.Sprintf("%.2f", price)
 	return evt
 }
 
 func (evt *Event) SetAdvertisingID(advertisingID string) *Event {
-	if evt.platform == Android {
+	if evt.Platform == Android {
 		evt.AdvertisingID = advertisingID
 	} else {
 		evt.IDFA = advertisingID
@@ -203,8 +203,8 @@ func (evt *Event) SetDeviceIP(deviceIP string) *Event {
 }
 
 func (evt Event) MarshalJSON() ([]byte, error) {
-	if len(evt.values) > 0 {
-		if data, err := json.Marshal(evt.values); err != nil {
+	if len(evt.Values) > 0 {
+		if data, err := json.Marshal(evt.Values); err != nil {
 			return nil, err
 		} else {
 			evt.EventValue = string(data)
