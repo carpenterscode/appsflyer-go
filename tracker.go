@@ -45,6 +45,10 @@ func NewTracker() Tracker {
 	return &tracker{client: client}
 }
 
+func NewTrackerWithClient(client http.Client) Tracker {
+	return &tracker{client: client}
+}
+
 func (t *tracker) SetConfig(configPath string) error {
 	configFile, configErr := os.Open(configPath)
 	defer configFile.Close()
